@@ -96,6 +96,13 @@ patient/flag requests, and the absence of scheduling without a module daemon tok
 It uses synthetic objects and a controlled scheduler. Run it with the API tests
 using `mvn -pl api -am test`.
 
+Groovy evaluation keeps its completion state under the evaluator's monitor.
+Result readers wait for that state, rather than depending on receiving a future
+notification. A result or exception remains available when evaluation completes
+before retrieval, and completion releases all waiting readers.
+`GroovyFlagEvaluatorCompletionTest` controls these execution orders with synthetic
+data, including success, failure, and multiple waiting readers.
+
 `Encounter Service Advice` : When an encounter occurs, this service is invoked, triggering the start of the patient flag task
 thread and initiating the evaluation of the patient's flags. This is the operating use of Access
 Oriented programming.
