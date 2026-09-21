@@ -84,6 +84,18 @@ module's REST API. The current flag module backend consists of five major aspect
 flagged patients based on given flags, and evaluating all flags. It operates as a thread, managing
 these tasks concurrently and efficiently.
 
+Each call to `generatePatientFlags(Patient)` or `generatePatientFlags(Flag)` submits
+a separate task whose target reference cannot be reassigned. The caller can reuse
+the dispatcher when an encounter affects several patients: a later request must
+not change which patient or flag an earlier queued task evaluates. Calling `run()`
+on a newly constructed, untargeted task continues to schedule evaluation of all
+flags. Daemon-token requirements and service authorization remain unchanged.
+
+`PatientFlagTaskSchedulingTest` verifies delayed and reversed execution, mixed
+patient/flag requests, and the absence of scheduling without a module daemon token.
+It uses synthetic objects and a controlled scheduler. Run it with the API tests
+using `mvn -pl api -am test`.
+
 `Encounter Service Advice` : When an encounter occurs, this service is invoked, triggering the start of the patient flag task
 thread and initiating the evaluation of the patient's flags. This is the operating use of Access
 Oriented programming.
