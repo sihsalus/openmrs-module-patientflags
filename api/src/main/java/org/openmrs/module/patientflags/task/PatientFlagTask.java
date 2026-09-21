@@ -35,9 +35,18 @@ public class PatientFlagTask implements Runnable {
 	
 	private static DaemonToken daemonToken;
 	
-	private Patient patient;
+	private final Patient patient;
 	
-	private Flag flag;
+	private final Flag flag;
+
+	public PatientFlagTask() {
+		this(null, null);
+	}
+
+	private PatientFlagTask(Patient patient, Flag flag) {
+		this.patient = patient;
+		this.flag = flag;
+	}
 	
 	@Override
 	public void run() {
@@ -66,18 +75,14 @@ public class PatientFlagTask implements Runnable {
 	}
 	
 	public void generatePatientFlags(Patient patient) {
-		this.patient = patient;
-		
 		if (daemonToken != null) {
-			Daemon.runInDaemonThread(this, daemonToken);
+			Daemon.runInDaemonThread(new PatientFlagTask(patient, null), daemonToken);
 		}
 	}
 	
 	public void generatePatientFlags(Flag flag) {
-		this.flag = flag;
-		
 		if (daemonToken != null) {
-			Daemon.runInDaemonThread(this, daemonToken);
+			Daemon.runInDaemonThread(new PatientFlagTask(null, flag), daemonToken);
 		}
 	}
 
